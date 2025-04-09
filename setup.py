@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sklearn_metrics",
-    version="0.1.2",
+    version="0.1.3",
     author="Subashanan Nair",
     author_email="subashnair12@gmail.com",
     description="A Python package for enhanced model evaluation metrics",
