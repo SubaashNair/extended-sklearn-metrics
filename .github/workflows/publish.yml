@@ -52,7 +52,7 @@ jobs:
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        password: ${{ secrets.SKLEARN_METRICS }}
     
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
