@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="extended-sklearn-metrics",
-    version="0.1.3",
+    version="0.1.4",
     author="Subashanan Nair",
     author_email="subashnair12@gmail.com",
     description="A Python package for extended scikit-learn model evaluation metrics",
@@ -20,9 +20,9 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    license="MIT",
     python_requires=">=3.8",
     install_requires=[
         "numpy>=1.24.0",
