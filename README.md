@@ -12,6 +12,14 @@ A Python library for evaluating scikit-learn regression models with comprehensiv
 
 ## Installation
 
+### From PyPI
+
+```bash
+pip install extended-sklearn-metrics
+```
+
+### From Source
+
 1. Clone this repository:
 ```bash
 git clone https://github.com/SubaashNair/extended-sklearn-metrics.git
