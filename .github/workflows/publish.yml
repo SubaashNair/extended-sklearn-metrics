@@ -60,12 +60,9 @@ jobs:
     
     - name: Publish to PyPI
       if: steps.check_version.outputs.exists == 'false'
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine check dist/*
-        twine upload dist/*
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_PASSWORD }}
       
     - name: Create tag for new version
       if: steps.check_version.outputs.exists == 'false'
