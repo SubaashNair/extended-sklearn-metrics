@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="sklearnMetrics",
+    name="sklearn-metrics",
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
