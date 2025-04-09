@@ -5,18 +5,18 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="sklearn_metrics",
+    name="extended-sklearn-metrics",
     version="0.1.3",
     author="Subashanan Nair",
     author_email="subashnair12@gmail.com",
-    description="A Python package for enhanced model evaluation metrics",
+    description="A Python package for extended scikit-learn model evaluation metrics",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/subashanannair/sklearn_metrics",
+    url="https://github.com/subashanannair/extended-sklearn-metrics",
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "sklearn_metrics": ["*.py"],
+        "extended_sklearn_metrics": ["*.py"],
     },
     classifiers=[
         "Programming Language :: Python :: 3",

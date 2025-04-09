@@ -1,4 +1,4 @@
-# sklearnMetrics
+# extended-sklearn-metrics
 
 A Python library for evaluating scikit-learn regression models with comprehensive metrics and interpretable results.
 
@@ -14,8 +14,8 @@ A Python library for evaluating scikit-learn regression models with comprehensiv
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/SubaashNair/sklearnMetrics.git
-cd sklearnMetrics
+git clone https://github.com/SubaashNair/extended-sklearn-metrics.git
+cd extended-sklearn-metrics
 ```
 
 2. Install dependencies:
@@ -32,7 +32,7 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from sklearnMetrics import evaluate_model_with_cross_validation
+from extended_sklearn_metrics import evaluate_model_with_cross_validation
 
 # Load and prepare data
 housing = fetch_california_housing(as_frame=True)

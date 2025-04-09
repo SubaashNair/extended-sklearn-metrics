@@ -1,5 +1,5 @@
 """
-sklearn_metrics - A Python package for enhanced model evaluation metrics
+extended-sklearn-metrics - A Python package for enhanced scikit-learn model evaluation metrics
 """
 
 __version__ = "0.1.3"
