@@ -9,7 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for PyPI trusted publishing
       contents: write  # Required for tagging
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build
+        pip install build twine
     
     - name: Extract version
       id: extract_version
@@ -59,9 +58,14 @@ jobs:
       if: steps.check_version.outputs.exists == 'false'
       run: ls -l dist/
     
-    - name: Publish package to PyPI
+    - name: Publish to PyPI
       if: steps.check_version.outputs.exists == 'false'
-      uses: pypa/gh-action-pypi-publish@release/v1
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine check dist/*
+        twine upload dist/*
       
     - name: Create tag for new version
       if: steps.check_version.outputs.exists == 'false'
@@ -69,4 +73,4 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git tag -a v${{ steps.extract_version.outputs.version }} -m "Release v${{ steps.extract_version.outputs.version }}"
-        git push origin v${{ steps.extract_version.outputs.version }} 
+        git push origin v${{ steps.extract_version.outputs.version }}
