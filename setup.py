@@ -1,42 +1,28 @@
 from setuptools import setup, find_packages
 
 # Read the contents of README.md
-with open("README.md", encoding="utf-8") as f:
-    long_description = f.read()
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
-    name="sklearn-metrics",
-    version="0.1.0",
-    packages=find_packages(),
-    install_requires=[
-        "pandas>=2.0.0",
-        "scikit-learn>=1.0.0",
-        "numpy>=1.20.0",
-    ],
-    author="sklearnMetrics Contributors",
-    author_email="subaashnair@gmail.com",  # Replace with your email
-    description="A library for evaluating scikit-learn regression models with comprehensive metrics",
+    name="sklearn_metrics",
+    version="0.1.1",
+    author="Subashanan Nair",
+    author_email="subashnair12@gmail.com",
+    description="A Python package for enhanced model evaluation metrics",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/SubaashNair/sklearnMetrics",
-    project_urls={
-        "Bug Tracker": "https://github.com/SubaashNair/sklearnMetrics/issues",
-        "Documentation": "https://github.com/SubaashNair/sklearnMetrics#readme",
-        "Source Code": "https://github.com/SubaashNair/sklearnMetrics",
-    },
+    url="https://github.com/subashanannair/sklearnMetrics",
+    packages=find_packages(),
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "Intended Audience :: Science/Research",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Topic :: Scientific/Engineering",
-        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires=">=3.9",
-    keywords="scikit-learn, machine learning, metrics, evaluation, regression",
+    python_requires=">=3.8",
+    install_requires=[
+        "numpy>=1.24.0",
+        "pandas>=2.0.0",
+        "scikit-learn>=1.3.0"
+    ],
 ) 
