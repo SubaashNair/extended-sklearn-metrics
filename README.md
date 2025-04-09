@@ -87,10 +87,10 @@ The library generates a DataFrame with the following columns:
 
 ## Requirements
 
-- Python 3.7+
-- pandas
-- scikit-learn
-- numpy
+- Python 3.9+
+- pandas >= 2.0.0
+- scikit-learn >= 1.0.0
+- numpy >= 1.20.0
 
 ## License
 
