@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Required for tagging
+      id-token: write  # Required for trusted publishing
     steps:
     - uses: actions/checkout@v4
       with:
