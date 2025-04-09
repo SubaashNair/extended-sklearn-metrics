@@ -6,14 +6,18 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sklearn_metrics",
-    version="0.1.1",
+    version="0.1.2",
     author="Subashanan Nair",
     author_email="subashnair12@gmail.com",
     description="A Python package for enhanced model evaluation metrics",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/subashanannair/sklearnMetrics",
+    url="https://github.com/subashanannair/sklearn_metrics",
     packages=find_packages(),
+    include_package_data=True,
+    package_data={
+        "sklearn_metrics": ["*.py"],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

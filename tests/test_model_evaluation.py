@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.datasets import make_regression
-from sklearnMetrics import evaluate_model_with_cross_validation
+from sklearn_metrics import evaluate_model_with_cross_validation
 
 @pytest.fixture
 def test_data():
