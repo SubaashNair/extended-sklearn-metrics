@@ -47,13 +47,12 @@ jobs:
     - name: Test wheel installation
       run: |
         pip install dist/*.whl
-        python -c "import sklearnMetrics; print(sklearnMetrics.__version__)"
+        python -c "from sklearn_metrics import __version__; print(__version__)"
     
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        verbose: true
-        print-hash: true
+        password: ${{ secrets.PYPI_API_TOKEN }}
     
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
