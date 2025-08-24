@@ -3,7 +3,7 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from sklearnMetrics import evaluate_model_with_cross_validation
+from extended_sklearn_metrics import evaluate_model_with_cross_validation
 
 # Load dataset
 print("Loading California Housing dataset...")
