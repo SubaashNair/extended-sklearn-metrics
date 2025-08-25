@@ -159,6 +159,24 @@ def print_evaluation_summary(evaluation_results: Dict[str, Any]) -> None:
     evaluation_results : dict
         Results from final_model_evaluation function
     """
+    # Type check to ensure we have the right input
+    if not isinstance(evaluation_results, dict):
+        raise TypeError(
+            f"Expected dictionary from final_model_evaluation(), "
+            f"but got {type(evaluation_results)}. "
+            f"Make sure you're passing the result of final_model_evaluation(), "
+            f"not create_evaluation_report()."
+        )
+    
+    # Check for required keys
+    required_keys = ['task_type', 'train_size', 'test_size', 'n_features']
+    missing_keys = [key for key in required_keys if key not in evaluation_results]
+    if missing_keys:
+        raise KeyError(
+            f"Missing required keys in evaluation_results: {missing_keys}. "
+            f"Make sure you're passing the result of final_model_evaluation()."
+        )
+    
     print("=" * 80)
     print("COMPREHENSIVE MODEL EVALUATION REPORT")
     print("=" * 80)
