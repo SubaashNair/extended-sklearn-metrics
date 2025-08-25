@@ -1,276 +1,515 @@
-# extended-sklearn-metrics
+# Extended Sklearn Metrics
 
-A comprehensive Python library for evaluating both **regression and classification** models with advanced metrics, custom thresholds, and beautiful visualizations.
+A comprehensive evaluation library for scikit-learn models with advanced metrics, ROC/AUC analysis, feature importance, fairness evaluation, and professional visualizations.
 
 ## Features
 
-### 🔧 Core Functionality
-- **Regression & Classification Support** - Comprehensive evaluation for both problem types
-- **Cross-validation based model evaluation** - Robust performance estimation
-- **Full sklearn Pipeline support** - Works seamlessly with preprocessing pipelines
-- **Advanced Input Validation** - Comprehensive error checking and helpful warnings
-- **Type Hints** - Full typing support for better IDE integration
+### 🎯 Core Capabilities
+- **Cross-validation evaluation** with custom thresholds for classification and regression
+- **ROC/AUC analysis** with threshold optimization and multi-class support
+- **Comprehensive model evaluation** with hold-out test sets
+- **Feature importance analysis** (built-in + permutation importance)
+- **Fairness evaluation** across demographic groups
+- **Residual diagnostics** for regression models
+- **Professional visualizations** and reporting
 
-### 📊 Metrics & Evaluation
-- **Regression**: RMSE, MAE, R², Explained Variance with percentage calculations
-- **Classification**: Accuracy, Precision, Recall, F1-Score, ROC AUC (binary)
-- **Custom Performance Thresholds** - Define your own success criteria
-- **Performance Classification** - Automatic categorization (Excellent, Good, etc.)
-- **Multi-class Support** - Flexible averaging strategies (micro, macro, weighted)
+### 📊 ROC/AUC Analysis
+- ROC curve calculation and visualization
+- Precision-Recall curves and AUC-PR metrics
+- Threshold optimization (Youden's Index, F1-optimal, balanced accuracy)
+- Multi-class ROC analysis (one-vs-rest)
+- Interactive threshold analysis plots
 
-### 📈 Visualization & Reporting
-- **Interactive Plots** - Performance summaries, model comparisons, radar charts
-- **Rich Console Reports** - Formatted reports with recommendations and emojis
-- **Model Comparison** - Side-by-side comparison of multiple models
-- **Pipeline Compatibility** - All features work with complex preprocessing pipelines
+### 🔍 Comprehensive Evaluation
+- Hold-out test evaluation with cross-validation stability
+- Multi-method feature importance (built-in + permutation)
+- Model interpretation and complexity assessment
+- Error analysis and residual diagnostics
+- Fairness evaluation by protected attributes
+- Actionable recommendations and insights
+
+### 📈 Advanced Visualizations
+- ROC curves with confidence intervals
+- Precision-Recall curves
+- Multi-class ROC comparisons
+- Feature importance plots
+- Fairness comparison charts
+- Comprehensive evaluation dashboards
 
 ## Installation
-
-### From PyPI
 
 ```bash
 pip install extended-sklearn-metrics
 ```
 
-### From Source
+## Quick Start
 
-1. Clone this repository:
-```bash
-git clone https://github.com/SubaashNair/extended-sklearn-metrics.git
-cd extended-sklearn-metrics
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-Here's a simple example using the California Housing dataset:
+### Basic Classification Evaluation
 
 ```python
-from sklearn.datasets import fetch_california_housing
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from extended_sklearn_metrics import evaluate_model_with_cross_validation
-
-# Load and prepare data
-housing = fetch_california_housing(as_frame=True)
-X_train, X_test, y_train, y_test = train_test_split(
-    housing.data, housing.target, test_size=0.2, random_state=42
-)
-
-# Scale features
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-
-# Create and evaluate model
-model = LinearRegression()
-target_range = y_train.max() - y_train.min()
-
-# Get performance metrics
-performance_table = evaluate_model_with_cross_validation(
-    model=model,
-    X=X_train_scaled,
-    y=y_train,
-    cv=5,
-    target_range=target_range
-)
-
-print(performance_table)
-```
-
-## Pipeline Support
-
-The library works seamlessly with sklearn pipelines, including complex preprocessing:
-
-```python
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import Ridge
-from extended_sklearn_metrics import evaluate_model_with_cross_validation
-
-# Basic pipeline
-pipeline = Pipeline([
-    ('scaler', StandardScaler()),
-    ('regressor', LinearRegression())
-])
-
-# Complex pipeline with mixed data types
-preprocessor = ColumnTransformer([
-    ('num', StandardScaler(), numeric_columns),
-    ('cat', OneHotEncoder(drop='first'), categorical_columns)
-])
-
-complex_pipeline = Pipeline([
-    ('preprocessor', preprocessor),
-    ('regressor', Ridge(alpha=1.0))
-])
-
-# Evaluate any pipeline the same way
-result = evaluate_model_with_cross_validation(
-    model=pipeline,  # or complex_pipeline
-    X=X_train,
-    y=y_train,
-    cv=5
-)
-```
-
-## Classification Support
-
-Evaluate classification models with comprehensive metrics:
-
-```python
-from sklearn.datasets import load_iris
-from sklearn.ensemble import RandomForestClassifier
 from extended_sklearn_metrics import evaluate_classification_model_with_cross_validation
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
 
-# Load data
-iris = load_iris(as_frame=True)
-X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.3)
+# Create sample data
+X, y = make_classification(n_samples=1000, n_features=10, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Evaluate classifier
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-result = evaluate_classification_model_with_cross_validation(
-    model=model,
-    X=X_train,
-    y=y_train,
-    cv=5,
-    average='weighted'  # Options: 'micro', 'macro', 'weighted'
+# Train model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate with cross-validation
+results = evaluate_classification_model_with_cross_validation(
+    model, X_train, y_train, X_test, y_test, cv_folds=5
 )
+
+# Print results
+print(f"Test Accuracy: {results['test_accuracy']:.3f}")
+print(f"CV Accuracy: {results['cv_accuracy_mean']:.3f} ± {results['cv_accuracy_std']:.3f}")
 ```
 
-## Custom Performance Thresholds
-
-Define your own success criteria:
-
-```python
-from extended_sklearn_metrics import CustomThresholds
-
-# Create custom thresholds
-custom_thresholds = CustomThresholds(
-    error_thresholds=(5, 15, 25),    # RMSE/MAE: <5% = Excellent, 5-15% = Good, etc.
-    score_thresholds=(0.6, 0.8)      # R²/Accuracy: >0.8 = Good, 0.6-0.8 = Acceptable
-)
-
-# Use with any evaluation function
-result = evaluate_model_with_cross_validation(
-    model=model,
-    X=X_train,
-    y=y_train,
-    cv=5,
-    custom_thresholds=custom_thresholds
-)
-```
-
-## Visualizations & Rich Reports
-
-Create beautiful visualizations and reports:
+### ROC/AUC Analysis
 
 ```python
 from extended_sklearn_metrics import (
-    create_performance_summary_plot,
-    create_model_comparison_plot,
-    create_performance_radar_chart,
-    print_performance_report
+    calculate_roc_metrics, 
+    create_roc_curve_plot, 
+    find_optimal_thresholds,
+    print_roc_auc_summary
 )
+from sklearn.linear_model import LogisticRegression
 
-# Rich console report with recommendations
-print_performance_report(result)
+# Train model
+model = LogisticRegression(random_state=42)
+model.fit(X_train, y_train)
 
-# Interactive plots (requires matplotlib)
-create_performance_summary_plot(result, title="Model Performance")
-create_performance_radar_chart(result)
+# Get predictions
+y_pred_proba = model.predict_proba(X_test)[:, 1]
 
-# Compare multiple models
-models_results = {
-    'LinearRegression': result1,
-    'RandomForest': result2,
-    'SVM': result3
-}
-create_model_comparison_plot(models_results)
+# Calculate ROC metrics
+roc_results = calculate_roc_metrics(y_test, y_pred_proba)
+
+# Print summary
+print_roc_auc_summary(roc_results)
+
+# Find optimal thresholds
+optimal_thresholds = find_optimal_thresholds(y_test, y_pred_proba)
+print("Optimal Thresholds:")
+for method, threshold in optimal_thresholds.items():
+    print(f"  {method}: {threshold:.3f}")
+
+# Create ROC curve plot
+create_roc_curve_plot(roc_results, title="Model ROC Curve")
 ```
 
-## Output Format
+### Multi-class ROC Analysis
 
-The library generates a DataFrame with the following columns:
+```python
+from extended_sklearn_metrics import calculate_multiclass_roc_metrics, create_multiclass_roc_plot
+from sklearn.datasets import make_classification
 
-| Column | Description |
-|--------|-------------|
-| Metric | Name of the metric (RMSE, MAE, R², etc.) |
-| Value | Computed value of the metric |
-| Threshold | Thresholds used for performance classification |
-| Calculation | Formula/method used to compute the metric |
-| Performance | Classification (Excellent, Good, Moderate, Poor) |
+# Create multi-class data
+X, y = make_classification(n_samples=1000, n_features=10, n_classes=3, 
+                          n_informative=8, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-## Performance Thresholds
+# Train model
+model = LogisticRegression(random_state=42, multi_class='ovr')
+model.fit(X_train, y_train)
 
-### RMSE and MAE
-- < 10% of range: Excellent
-- 10%–20% of range: Good
-- 20%–30% of range: Moderate
-- > 30% of range: Poor
+# Get class probabilities
+y_pred_proba = model.predict_proba(X_test)
 
-### R² and Explained Variance
-- > 0.7: Good
-- 0.5–0.7: Acceptable
-- < 0.5: Poor
+# Calculate multi-class ROC metrics
+multiclass_roc = calculate_multiclass_roc_metrics(y_test, y_pred_proba)
 
-## Requirements
+print(f"Macro-average AUC: {multiclass_roc['macro_auc']:.3f}")
+print(f"Micro-average AUC: {multiclass_roc['micro_auc']:.3f}")
 
-### Core Dependencies
-- Python 3.8+
-- pandas >= 2.0.0
-- scikit-learn >= 1.3.0
-- numpy >= 1.24.0
+# Create multi-class ROC plot
+create_multiclass_roc_plot(multiclass_roc, title="Multi-class ROC Analysis")
+```
 
-### Optional Dependencies
-- matplotlib >= 3.0.0 (for visualizations)
+### Comprehensive Model Evaluation
 
-Install with visualizations:
-```bash
-pip install extended-sklearn-metrics matplotlib
+```python
+from extended_sklearn_metrics import (
+    final_model_evaluation,
+    print_evaluation_summary,
+    create_evaluation_report,
+    create_comprehensive_evaluation_plots
+)
+import pandas as pd
+
+# Create feature names
+feature_names = [f'feature_{i}' for i in range(X.shape[1])]
+
+# Convert to DataFrame for better analysis
+X_train_df = pd.DataFrame(X_train, columns=feature_names)
+X_test_df = pd.DataFrame(X_test, columns=feature_names)
+
+# Comprehensive evaluation
+evaluation_results = final_model_evaluation(
+    model=model,
+    X_train=X_train_df,
+    y_train=y_train,
+    X_test=X_test_df,
+    y_test=y_test,
+    task_type='classification',
+    cv_folds=5,
+    feature_names=feature_names,
+    random_state=42
+)
+
+# Print summary
+print_evaluation_summary(evaluation_results)
+
+# Create detailed report
+report_df = create_evaluation_report(evaluation_results)
+print(report_df)
+
+# Generate comprehensive visualizations
+create_comprehensive_evaluation_plots(evaluation_results)
+```
+
+### Fairness Evaluation
+
+```python
+import numpy as np
+
+# Create protected attributes (demographic information)
+np.random.seed(42)
+protected_attrs = {
+    'gender': np.random.choice(['Male', 'Female'], size=len(y_test), p=[0.6, 0.4]),
+    'age_group': np.random.choice(['Young', 'Senior'], size=len(y_test), p=[0.7, 0.3])
+}
+
+# Comprehensive evaluation with fairness analysis
+evaluation_results = final_model_evaluation(
+    model=model,
+    X_train=X_train_df,
+    y_train=y_train,
+    X_test=X_test_df,
+    y_test=y_test,
+    task_type='classification',
+    cv_folds=5,
+    feature_names=feature_names,
+    protected_attributes=protected_attrs,  # Enable fairness analysis
+    random_state=42
+)
+
+# Create fairness report
+from extended_sklearn_metrics import create_fairness_report, create_fairness_comparison_plot
+
+fairness_report = create_fairness_report(evaluation_results)
+if fairness_report is not None:
+    print("Fairness Analysis:")
+    print(fairness_report)
+    
+    # Create fairness visualization
+    create_fairness_comparison_plot(evaluation_results)
+```
+
+### Regression Evaluation
+
+```python
+from extended_sklearn_metrics import evaluate_model_with_cross_validation
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.datasets import make_regression
+
+# Create regression data
+X, y = make_regression(n_samples=1000, n_features=10, noise=10, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train regression model
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate with cross-validation
+results = evaluate_model_with_cross_validation(
+    model, X_train, y_train, X_test, y_test, cv_folds=5
+)
+
+print(f"Test R²: {results['test_r2']:.3f}")
+print(f"Test RMSE: {results['test_rmse']:.3f}")
+print(f"CV R²: {results['cv_r2_mean']:.3f} ± {results['cv_r2_std']:.3f}")
+
+# Comprehensive regression evaluation
+feature_names = [f'feature_{i}' for i in range(X.shape[1])]
+X_train_df = pd.DataFrame(X_train, columns=feature_names)
+X_test_df = pd.DataFrame(X_test, columns=feature_names)
+
+regression_results = final_model_evaluation(
+    model=model,
+    X_train=X_train_df,
+    y_train=y_train,
+    X_test=X_test_df,
+    y_test=y_test,
+    task_type='regression',
+    cv_folds=5,
+    feature_names=feature_names,
+    random_state=42
+)
+
+# Print comprehensive summary
+print_evaluation_summary(regression_results)
 ```
 
 ## API Reference
 
-### Core Functions
+### Core Evaluation Functions
 
-#### `evaluate_model_with_cross_validation(model, X, y, cv=5, target_range=None, custom_thresholds=None)`
-Evaluate regression models with comprehensive metrics.
+#### `evaluate_classification_model_with_cross_validation`
+Comprehensive classification evaluation with cross-validation.
 
-#### `evaluate_classification_model_with_cross_validation(model, X, y, cv=5, average='weighted')`
-Evaluate classification models with comprehensive metrics.
+**Parameters:**
+- `model`: Trained scikit-learn classifier
+- `X_train`, `y_train`: Training data
+- `X_test`, `y_test`: Test data  
+- `cv_folds`: Number of cross-validation folds (default: 5)
+- `custom_thresholds`: Custom decision thresholds to evaluate
 
-#### `CustomThresholds(error_thresholds=(10, 20, 30), score_thresholds=(0.5, 0.7))`
-Define custom performance thresholds for evaluation.
+**Returns:** Dictionary with classification metrics and cross-validation results
+
+#### `evaluate_model_with_cross_validation`
+General model evaluation supporting both classification and regression.
+
+**Parameters:**
+- `model`: Trained scikit-learn model
+- `X_train`, `y_train`: Training data
+- `X_test`, `y_test`: Test data
+- `cv_folds`: Number of cross-validation folds (default: 5)
+
+**Returns:** Dictionary with appropriate metrics based on model type
+
+### ROC/AUC Analysis Functions
+
+#### `calculate_roc_metrics`
+Calculate ROC curve metrics for binary classification.
+
+**Parameters:**
+- `y_true`: True binary labels
+- `y_pred_proba`: Predicted probabilities for positive class
+- `pos_label`: Positive class label (default: 1)
+
+**Returns:** Dictionary with FPR, TPR, thresholds, and AUC score
+
+#### `calculate_multiclass_roc_metrics`
+Calculate ROC metrics for multi-class classification using one-vs-rest approach.
+
+**Parameters:**
+- `y_true`: True class labels
+- `y_pred_proba`: Predicted class probabilities
+- `class_names`: List of class names (optional)
+
+**Returns:** Dictionary with per-class ROC metrics and macro/micro averages
+
+#### `find_optimal_thresholds`
+Find optimal classification thresholds using various methods.
+
+**Parameters:**
+- `y_true`: True binary labels
+- `y_pred_proba`: Predicted probabilities
+- `methods`: List of optimization methods (default: ['youden', 'f1', 'balanced_accuracy'])
+
+**Returns:** Dictionary mapping method names to optimal thresholds
+
+### Comprehensive Evaluation
+
+#### `final_model_evaluation`
+Comprehensive model evaluation with hold-out testing, feature importance, and fairness analysis.
+
+**Parameters:**
+- `model`: Trained scikit-learn model
+- `X_train`, `y_train`: Training data
+- `X_test`, `y_test`: Test data
+- `task_type`: 'classification' or 'regression'
+- `cv_folds`: Number of cross-validation folds (default: 5)
+- `feature_names`: List of feature names (optional)
+- `protected_attributes`: Dictionary of protected attributes for fairness analysis (optional)
+- `random_state`: Random seed (default: 42)
+
+**Returns:** Comprehensive evaluation results dictionary
 
 ### Visualization Functions
 
-#### `print_performance_report(results)`
-Print a formatted console report with recommendations.
+#### `create_roc_curve_plot`
+Create ROC curve visualization.
 
-#### `create_performance_summary_plot(results, title=None, figsize=(10, 6))`
-Create bar charts showing metric values and performance categories.
+**Parameters:**
+- `roc_results`: Results from `calculate_roc_metrics`
+- `title`: Plot title (optional)
+- `show_optimal_threshold`: Whether to highlight optimal threshold (default: True)
 
-#### `create_model_comparison_plot(results_dict, figsize=(12, 8))`
-Compare multiple models side-by-side.
+#### `create_multiclass_roc_plot`
+Create multi-class ROC curve visualization.
 
-#### `create_performance_radar_chart(results, title=None, figsize=(8, 8))`
-Create radar/spider chart visualization.
+**Parameters:**
+- `multiclass_roc_results`: Results from `calculate_multiclass_roc_metrics`
+- `title`: Plot title (optional)
 
-## Examples
+#### `create_comprehensive_evaluation_plots`
+Create comprehensive evaluation dashboard with multiple panels.
 
-The library includes comprehensive examples in the `examples/` directory:
-- `california_housing_example.py` - Basic regression usage
-- `pipeline_examples.py` - Pipeline integration examples
-- `classification_examples.py` - Classification evaluation examples  
-- `custom_thresholds_example.py` - Custom threshold usage
-- `visualization_examples.py` - Visualization capabilities
+**Parameters:**
+- `evaluation_results`: Results from `final_model_evaluation`
+- `figsize`: Figure size tuple (optional)
+
+### Reporting Functions
+
+#### `print_evaluation_summary`
+Print executive summary of evaluation results.
+
+**Parameters:**
+- `evaluation_results`: Results from `final_model_evaluation`
+
+#### `create_evaluation_report`
+Create detailed evaluation report as pandas DataFrame.
+
+**Parameters:**
+- `evaluation_results`: Results from `final_model_evaluation`
+
+**Returns:** pandas DataFrame with evaluation metrics
+
+#### `create_feature_importance_report`
+Create feature importance analysis report.
+
+**Parameters:**
+- `evaluation_results`: Results from `final_model_evaluation`
+
+**Returns:** pandas DataFrame with feature importance rankings
+
+#### `create_fairness_report`
+Create fairness analysis report by demographic groups.
+
+**Parameters:**
+- `evaluation_results`: Results from `final_model_evaluation`
+
+**Returns:** pandas DataFrame with fairness metrics by group
+
+## Advanced Examples
+
+### Complete Workflow Example
+
+```python
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_classification
+from extended_sklearn_metrics import *
+
+# 1. Create sample data with feature names
+np.random.seed(42)
+X, y = make_classification(n_samples=2000, n_features=15, n_informative=10, 
+                          n_redundant=3, weights=[0.7, 0.3], random_state=42)
+
+feature_names = ['income', 'education', 'age', 'experience', 'debt_ratio',
+                'credit_score', 'loan_amount', 'property_value', 'savings',
+                'dependents', 'employment_type', 'payment_history', 
+                'account_balance', 'investment_portfolio', 'insurance']
+
+X_df = pd.DataFrame(X, columns=feature_names)
+y_series = pd.Series(y, name='loan_approved')
+
+# 2. Create protected attributes for fairness analysis
+protected_attrs = {
+    'gender': np.random.choice(['Male', 'Female'], size=len(y), p=[0.6, 0.4]),
+    'age_group': np.random.choice(['Young', 'Middle', 'Senior'], size=len(y), p=[0.3, 0.5, 0.2])
+}
+
+# 3. Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X_df, y_series, test_size=0.2, random_state=42, stratify=y_series
+)
+
+# Get protected attributes for test set
+test_indices = y_test.index
+protected_attrs_test = {
+    attr: values[test_indices] for attr, values in protected_attrs.items()
+}
+
+# 4. Train model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# 5. Comprehensive evaluation
+evaluation_results = final_model_evaluation(
+    model=model,
+    X_train=X_train,
+    y_train=y_train,
+    X_test=X_test,
+    y_test=y_test,
+    task_type='classification',
+    cv_folds=5,
+    feature_names=feature_names,
+    protected_attributes=protected_attrs_test,
+    random_state=42
+)
+
+# 6. Generate reports
+print("=== EVALUATION SUMMARY ===")
+print_evaluation_summary(evaluation_results)
+
+print("\n=== DETAILED METRICS ===")
+eval_report = create_evaluation_report(evaluation_results)
+print(eval_report)
+
+print("\n=== TOP 10 MOST IMPORTANT FEATURES ===")
+fi_report = create_feature_importance_report(evaluation_results)
+if fi_report is not None:
+    print(fi_report.head(10))
+
+print("\n=== FAIRNESS ANALYSIS ===")
+fairness_report = create_fairness_report(evaluation_results)
+if fairness_report is not None:
+    print(fairness_report)
+
+# 7. Create visualizations
+create_comprehensive_evaluation_plots(evaluation_results)
+create_feature_importance_plot(evaluation_results, top_n=12)
+create_fairness_comparison_plot(evaluation_results)
+
+print("\n✅ Complete evaluation finished!")
+```
+
+## Dependencies
+
+- `numpy >= 1.24.0`
+- `pandas >= 2.0.0`
+- `scikit-learn >= 1.3.0`
+- `matplotlib >= 3.5.0` (optional, for visualizations)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT License - see LICENSE file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Version History
+
+### v0.3.0 (Latest)
+- Added comprehensive ROC/AUC analysis with threshold optimization
+- Implemented multi-class ROC support (one-vs-rest)
+- Added Precision-Recall curves and AUC-PR metrics
+- Created comprehensive model evaluation framework
+- Added feature importance analysis (built-in + permutation)
+- Implemented fairness evaluation across demographic groups
+- Added hold-out test evaluation with cross-validation stability
+- Created professional reporting and visualization suite
+- Added model interpretation and complexity assessment
+- Enhanced error analysis and residual diagnostics
+
+### v0.2.0
+- Added residual diagnostics for regression models
+- Enhanced visualization capabilities
+- Improved cross-validation metrics
+
+### v0.1.0
+- Initial release with basic classification and regression evaluation
+- Cross-validation support with custom thresholds
+- Basic performance visualizations
