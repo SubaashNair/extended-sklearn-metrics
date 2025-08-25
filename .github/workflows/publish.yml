@@ -28,7 +28,7 @@ jobs:
     - name: Extract version
       id: extract_version
       run: |
-        VERSION=$(python -c "from setuptools import setup; setup()" --version)
+        VERSION=$(python -c "import sys; sys.path.insert(0, 'extended_sklearn_metrics'); from __init__ import __version__; print(__version__)")
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         
     - name: Check if version exists on PyPI
