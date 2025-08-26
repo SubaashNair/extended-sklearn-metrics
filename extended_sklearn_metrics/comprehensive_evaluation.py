@@ -614,23 +614,34 @@ def _analyze_feature_interactions(
     # Simple pairwise interaction detection
     interaction_strengths = []
     
-    for i in range(n_features):
-        for j in range(i + 1, n_features):
-            # Create interaction feature
-            interaction_feature = X_sample[:, i] * X_sample[:, j]
-            
-            # Calculate correlation with target
-            if task_type == 'regression':
-                corr = np.corrcoef(interaction_feature, y_sample)[0, 1]
-            else:
-                corr = np.corrcoef(interaction_feature, y_sample.astype(float))[0, 1]
-            
-            if not np.isnan(corr):
-                interaction_strengths.append({
-                    'feature_1': feature_names[i],
-                    'feature_2': feature_names[j],
-                    'interaction_strength': abs(corr)
-                })
+    # Need at least 2 samples for correlation calculation
+    if len(X_sample) >= 2:
+        for i in range(n_features):
+            for j in range(i + 1, n_features):
+                try:
+                    # Create interaction feature
+                    interaction_feature = X_sample[:, i] * X_sample[:, j]
+                    
+                    # Ensure we have valid arrays with variance for correlation
+                    if (len(interaction_feature) >= 2 and len(y_sample) >= 2 and
+                        np.std(interaction_feature) > 1e-8 and np.std(y_sample) > 1e-8):
+                        
+                        # Calculate correlation with target
+                        if task_type == 'regression':
+                            corr = np.corrcoef(interaction_feature, y_sample)[0, 1]
+                        else:
+                            corr = np.corrcoef(interaction_feature, y_sample.astype(float))[0, 1]
+                        
+                        if not np.isnan(corr):
+                            interaction_strengths.append({
+                                'feature_1': feature_names[i],
+                                'feature_2': feature_names[j],
+                                'interaction_strength': abs(corr)
+                            })
+                    
+                except Exception:
+                    # Skip this interaction if correlation calculation fails
+                    continue
     
     # Sort by interaction strength
     interaction_strengths.sort(key=lambda x: x['interaction_strength'], reverse=True)

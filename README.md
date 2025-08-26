@@ -494,7 +494,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Version History
 
-### v0.3.4 (Latest)
+### v0.3.5 (Latest)
+- Fixed AttributeError in feature interactions analysis when data has insufficient samples
+- Enhanced correlation validation and error handling for feature interaction detection
+- Improved robustness for edge cases in interaction analysis
+
+### v0.3.4
 - Added suppress_warnings parameter to final_model_evaluation function
 - Users can now suppress sklearn warnings about feature names and other non-critical warnings
 - Implemented clean context manager approach for warning suppression
