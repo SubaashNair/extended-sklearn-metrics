@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="extended-sklearn-metrics",
-    version="0.2.0",
+    version="0.3.2",
     author="Subashanan Nair",
     author_email="subashnair12@gmail.com",
     description="Comprehensive evaluation library for scikit-learn models with advanced metrics, custom thresholds, and visualizations",

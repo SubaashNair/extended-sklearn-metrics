@@ -540,7 +540,8 @@ def _assess_model_complexity(model) -> Dict[str, Any]:
     
     if hasattr(model, 'tree_') and hasattr(model.tree_, 'node_count'):
         complexity['n_nodes'] = model.tree_.node_count
-        complexity['n_leaves'] = model.tree_.n_leaves
+        if hasattr(model.tree_, 'n_leaves'):
+            complexity['n_leaves'] = model.tree_.n_leaves
     
     # Linear model complexity
     if hasattr(model, 'coef_'):

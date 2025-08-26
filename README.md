@@ -492,7 +492,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Version History
 
-### v0.3.0 (Latest)
+### v0.3.2 (Latest)
+- Fixed AttributeError in model complexity analysis for tree-based models
+- Enhanced error handling in comprehensive evaluation framework
+
+### v0.3.1
+- Improved error handling and stability
+- Enhanced compatibility with different sklearn model types
+
+### v0.3.0
 - Added comprehensive ROC/AUC analysis with threshold optimization
 - Implemented multi-class ROC support (one-vs-rest)
 - Added Precision-Recall curves and AUC-PR metrics

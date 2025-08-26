@@ -2,7 +2,7 @@
 extended-sklearn-metrics - A Python package for enhanced scikit-learn model evaluation metrics
 """
 
-__version__: str = "0.3.1"
+__version__: str = "0.3.2"
 
 from .model_evaluation import evaluate_model_with_cross_validation, CustomThresholds
 from .classification_evaluation import evaluate_classification_model_with_cross_validation
