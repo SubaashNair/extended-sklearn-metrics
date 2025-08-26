@@ -492,7 +492,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Version History
 
-### v0.3.2 (Latest)
+### v0.3.3 (Latest)
+- Fixed AttributeError in error correlation analysis when X_test has insufficient samples
+- Enhanced validation and error handling for correlation calculations
+- Improved robustness for edge cases with small datasets
+
+### v0.3.2
 - Fixed AttributeError in model complexity analysis for tree-based models
 - Enhanced error handling in comprehensive evaluation framework
 

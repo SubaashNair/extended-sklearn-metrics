@@ -385,14 +385,32 @@ def _analyze_errors(
         }
         
         # Error correlation with features
-        if X_test.shape[1] <= 20:  # Limit for performance
+        if X_test.shape[1] <= 20 and X_test.shape[0] >= 2:  # Need at least 2 samples for correlation
             error_correlations = []
             for i, feature_name in enumerate(feature_names):
-                corr = np.corrcoef(X_test[:, i], np.abs(residuals))[0, 1]
-                error_correlations.append({
-                    'feature': feature_name,
-                    'error_correlation': corr if not np.isnan(corr) else 0.0
-                })
+                try:
+                    feature_values = X_test[:, i]
+                    abs_residuals = np.abs(residuals)
+                    
+                    # Ensure we have arrays with at least 2 elements and some variance
+                    if (len(feature_values) >= 2 and len(abs_residuals) >= 2 and 
+                        np.std(feature_values) > 1e-8 and np.std(abs_residuals) > 1e-8):
+                        corr = np.corrcoef(feature_values, abs_residuals)[0, 1]
+                        if np.isnan(corr):
+                            corr = 0.0
+                    else:
+                        corr = 0.0
+                        
+                    error_correlations.append({
+                        'feature': feature_name,
+                        'error_correlation': corr
+                    })
+                except Exception:
+                    # If correlation calculation fails for any reason, set to 0
+                    error_correlations.append({
+                        'feature': feature_name,
+                        'error_correlation': 0.0
+                    })
             
             error_analysis['error_correlations_with_features'] = error_correlations
     
