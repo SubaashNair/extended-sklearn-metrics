@@ -150,7 +150,7 @@ feature_names = [f'feature_{i}' for i in range(X.shape[1])]
 X_train_df = pd.DataFrame(X_train, columns=feature_names)
 X_test_df = pd.DataFrame(X_test, columns=feature_names)
 
-# Comprehensive evaluation
+# Comprehensive evaluation (suppress sklearn warnings)
 evaluation_results = final_model_evaluation(
     model=model,
     X_train=X_train_df,
@@ -160,6 +160,7 @@ evaluation_results = final_model_evaluation(
     task_type='classification',
     cv_folds=5,
     feature_names=feature_names,
+    suppress_warnings=True,  # Suppress sklearn warnings
     random_state=42
 )
 
@@ -330,6 +331,7 @@ Comprehensive model evaluation with hold-out testing, feature importance, and fa
 - `feature_names`: List of feature names (optional)
 - `protected_attributes`: Dictionary of protected attributes for fairness analysis (optional)
 - `random_state`: Random seed (default: 42)
+- `suppress_warnings`: Whether to suppress sklearn warnings (default: False)
 
 **Returns:** Comprehensive evaluation results dictionary
 
@@ -492,7 +494,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Version History
 
-### v0.3.3 (Latest)
+### v0.3.4 (Latest)
+- Added suppress_warnings parameter to final_model_evaluation function
+- Users can now suppress sklearn warnings about feature names and other non-critical warnings
+- Implemented clean context manager approach for warning suppression
+
+### v0.3.3
 - Fixed AttributeError in error correlation analysis when X_test has insufficient samples
 - Enhanced validation and error handling for correlation calculations
 - Improved robustness for edge cases with small datasets

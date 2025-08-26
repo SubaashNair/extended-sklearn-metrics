@@ -13,6 +13,20 @@ from sklearn.inspection import permutation_importance
 from sklearn.calibration import calibration_curve
 from typing import Union, Optional, Dict, Any, List, Tuple
 import warnings
+import contextlib
+
+
+@contextlib.contextmanager
+def _suppress_sklearn_warnings():
+    """Context manager to suppress common sklearn warnings."""
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=UserWarning)
+        warnings.filterwarnings('ignore', message='.*feature names.*')
+        warnings.filterwarnings('ignore', message='.*valid feature names.*')
+        warnings.filterwarnings('ignore', message='.*StandardScaler.*')
+        warnings.filterwarnings('ignore', message='.*OneHotEncoder.*')
+        warnings.filterwarnings('ignore', message='.*does not have valid feature names.*')
+        yield
 
 
 def final_model_evaluation(
@@ -25,7 +39,8 @@ def final_model_evaluation(
     cv_folds: int = 5,
     feature_names: Optional[List[str]] = None,
     protected_attributes: Optional[Dict[str, Union[pd.Series, np.ndarray]]] = None,
-    random_state: int = 42
+    random_state: int = 42,
+    suppress_warnings: bool = False
 ) -> Dict[str, Any]:
     """
     Comprehensive final model evaluation on hold-out test set.
@@ -53,75 +68,81 @@ def final_model_evaluation(
         Format: {'attribute_name': array_of_values}
     random_state : int, default=42
         Random state for reproducibility
+    suppress_warnings : bool, default=False
+        If True, suppresses sklearn warnings about feature names and other non-critical warnings
         
     Returns
     -------
     dict
         Comprehensive evaluation results
     """
-    # Determine task type
-    if task_type == 'auto':
-        task_type = _detect_task_type(y_train)
+    # Use context manager for warning suppression if requested
+    context = _suppress_sklearn_warnings() if suppress_warnings else contextlib.nullcontext()
     
-    # Validate inputs
-    _validate_evaluation_inputs(model, X_train, y_train, X_test, y_test)
-    
-    # Get feature names
-    if feature_names is None:
-        if hasattr(X_train, 'columns'):
-            feature_names = list(X_train.columns)
-        else:
-            feature_names = [f'feature_{i}' for i in range(X_train.shape[1])]
-    
-    # Convert to arrays for consistency
-    X_train_array = np.asarray(X_train)
-    y_train_array = np.asarray(y_train)
-    X_test_array = np.asarray(X_test)
-    y_test_array = np.asarray(y_test)
-    
-    # Initialize results dictionary
-    results = {
-        'task_type': task_type,
-        'train_size': len(X_train_array),
-        'test_size': len(X_test_array),
-        'n_features': X_train_array.shape[1],
-        'feature_names': feature_names
-    }
-    
-    # 1. Basic Performance Metrics
-    results['performance'] = _evaluate_basic_performance(
-        model, X_test_array, y_test_array, task_type
-    )
-    
-    # 2. Cross-validation stability on training set
-    results['cv_stability'] = _evaluate_cv_stability(
-        model, X_train_array, y_train_array, task_type, cv_folds
-    )
-    
-    # 3. Feature Importance Analysis
-    results['feature_importance'] = _analyze_feature_importance(
-        model, X_train_array, y_train_array, X_test_array, y_test_array,
-        feature_names, task_type, random_state
-    )
-    
-    # 4. Error Analysis
-    results['error_analysis'] = _analyze_errors(
-        model, X_test_array, y_test_array, feature_names, task_type
-    )
-    
-    # 5. Fairness Analysis (if protected attributes provided)
-    if protected_attributes is not None:
-        results['fairness_analysis'] = _analyze_fairness(
-            model, X_test_array, y_test_array, protected_attributes, task_type
+    with context:
+        # Determine task type
+        if task_type == 'auto':
+            task_type = _detect_task_type(y_train)
+        
+        # Validate inputs
+        _validate_evaluation_inputs(model, X_train, y_train, X_test, y_test)
+        
+        # Get feature names
+        if feature_names is None:
+            if hasattr(X_train, 'columns'):
+                feature_names = list(X_train.columns)
+            else:
+                feature_names = [f'feature_{i}' for i in range(X_train.shape[1])]
+        
+        # Convert to arrays for consistency
+        X_train_array = np.asarray(X_train)
+        y_train_array = np.asarray(y_train)
+        X_test_array = np.asarray(X_test)
+        y_test_array = np.asarray(y_test)
+        
+        # Initialize results dictionary
+        results = {
+            'task_type': task_type,
+            'train_size': len(X_train_array),
+            'test_size': len(X_test_array),
+            'n_features': X_train_array.shape[1],
+            'feature_names': feature_names
+        }
+        
+        # 1. Basic Performance Metrics
+        results['performance'] = _evaluate_basic_performance(
+            model, X_test_array, y_test_array, task_type
         )
-    
-    # 6. Model Interpretation
-    results['interpretation'] = _analyze_model_interpretation(
-        model, X_train_array, y_train_array, X_test_array, 
-        feature_names, task_type, random_state
-    )
-    
-    return results
+        
+        # 2. Cross-validation stability on training set
+        results['cv_stability'] = _evaluate_cv_stability(
+            model, X_train_array, y_train_array, task_type, cv_folds
+        )
+        
+        # 3. Feature Importance Analysis
+        results['feature_importance'] = _analyze_feature_importance(
+            model, X_train_array, y_train_array, X_test_array, y_test_array,
+            feature_names, task_type, random_state
+        )
+        
+        # 4. Error Analysis
+        results['error_analysis'] = _analyze_errors(
+            model, X_test_array, y_test_array, feature_names, task_type
+        )
+        
+        # 5. Fairness Analysis (if protected attributes provided)
+        if protected_attributes is not None:
+            results['fairness_analysis'] = _analyze_fairness(
+                model, X_test_array, y_test_array, protected_attributes, task_type
+            )
+        
+        # 6. Model Interpretation
+        results['interpretation'] = _analyze_model_interpretation(
+            model, X_train_array, y_train_array, X_test_array, 
+            feature_names, task_type, random_state
+        )
+        
+        return results
 
 
 def _detect_task_type(y: np.ndarray) -> str:
